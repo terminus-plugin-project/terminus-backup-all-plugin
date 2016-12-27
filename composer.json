@@ -1,0 +1,15 @@
+{
+    "name": "terminus-plugin-project/terminus-backup-all-plugin",
+    "description": "Terminus plugin to backup all available Pantheon sites with one command",
+    "homepage": "https://github.com/terminus-plugin-project/terminus-backup-all-plugin",
+    "type": "terminus-plugin",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.4"
+    },
+		"extra": {
+				"terminus": {
+						"compatible-version": "^0"
+				}
+    }
+}
