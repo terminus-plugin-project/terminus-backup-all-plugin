@@ -1,5 +1,8 @@
 # Terminus Backup All Plugin
 
+[![Terminus v1.x Compatible](https://img.shields.io/badge/terminus-v1.x-green.svg)](https://github.com/terminus-plugin-project/terminus-backup-all-plugin/tree/1.x)
+[![Terminus v0.x Compatible](https://img.shields.io/badge/terminus-v0.x-green.svg)](https://github.com/terminus-plugin-project/terminus-backup-all-plugin/tree/0.x)
+
 Terminus plugin to backup all available Pantheon sites with one command.
 
 ## Installation:
