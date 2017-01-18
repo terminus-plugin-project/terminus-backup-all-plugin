@@ -4,12 +4,12 @@
     "homepage": "https://github.com/terminus-plugin-project/terminus-backup-all-plugin",
     "type": "terminus-plugin",
     "license": "MIT",
-    "require": {
-        "php": ">=5.4"
+    "autoload": {
+        "psr-4": { "TerminusPluginProject\\TerminusBackupAll\\": "src" }
     },
 		"extra": {
 				"terminus": {
-						"compatible-version": "^0"
+						"compatible-version": "^1"
 				}
     }
 }
