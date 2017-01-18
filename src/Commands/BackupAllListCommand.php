@@ -23,7 +23,8 @@ class BackupAllListCommand extends TerminusCommand implements SiteAwareInterface
      * @command backup-all:list
      * @aliases ball:list
      *
-     * @param string $element [code|files|database|db] Backup element filter
+     * @option string $env [dev|test|live] Backup environment filter
+     * @option string $element [code|files|database|db] Backup element filter
      *
      * @usage terminus backup-all:list
      *     Lists all backups in all site environments.
@@ -37,32 +38,36 @@ class BackupAllListCommand extends TerminusCommand implements SiteAwareInterface
      *     initiator: Initiator
      * @return RowsOfFields
      */
-    public function listBackups($element = 'all')
+    public function listBackups($options = ['env' => 'all', 'element' => 'all',])
     {
         $rows = [];
+        $element = $options['element'];
         $sites = $this->sites->serialize();
         foreach ($sites as $site) {
             if ($environments = $this->getSite($site['name'])->getEnvironments()->serialize()) {
                 foreach ($environments as $environment) {
                     if ($environment['initialized'] == 'true') {
-                        $site_env = $site['name'] . '.' . $environment['id'];
-                        list(, $env) = $this->getSiteEnv($site_env, 'dev');
+                        $show = ($options['env'] == 'all') ? true : ($environment['id'] == $options['env']);
+                        if ($show) {
+                            $site_env = $site['name'] . '.' . $environment['id'];
+                            list(, $env) = $this->getSiteEnv($site_env, 'dev');
 
-                        switch ($element) {
-                            case 'all':
-                                $backup_element = null;
-                                break;
-                            case 'db':
-                                $backup_element = 'database';
-                                break;
-                            default:
-                                $backup_element = $element;
-                        }
+                            switch ($element) {
+                                case 'all':
+                                    $backup_element = null;
+                                    break;
+                                case 'db':
+                                    $backup_element = 'database';
+                                    break;
+                                default:
+                                    $backup_element = $element;
+                            }
 
-                        $backups = $env->getBackups()->getFinishedBackups($backup_element);
+                            $backups = $env->getBackups()->getFinishedBackups($backup_element);
 
-                        foreach ($backups as $backup) {
-                            $rows[] = $backup->serialize();
+                            foreach ($backups as $backup) {
+                                $rows[] = $backup->serialize();
+                            }
                         }
                     }
                 }

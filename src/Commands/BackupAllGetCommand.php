@@ -24,6 +24,7 @@ class BackupAllGetCommand extends TerminusCommand implements SiteAwareInterface
      * @command backup-all:get
      * @aliases ball:get
      *
+     * @option string $env [dev|test|live] Backup environment to retrieve
      * @option string $element [code|files|database|db] Backup element to retrieve
      * @throws TerminusNotFoundException
      *
@@ -38,7 +39,7 @@ class BackupAllGetCommand extends TerminusCommand implements SiteAwareInterface
      *     url: URL
      * @return RowsOfFields
      */
-    public function getBackup(array $options = ['element' => null,])
+    public function getBackup(array $options = ['env' => 'all', 'element' => null,])
     {
         $rows = [];
         $sites = $this->sites->serialize();
@@ -46,29 +47,32 @@ class BackupAllGetCommand extends TerminusCommand implements SiteAwareInterface
             if ($environments = $this->getSite($site['name'])->getEnvironments()->serialize()) {
                 foreach ($environments as $environment) {
                     if ($environment['initialized'] == 'true') {
-                        $site_env = $site['name'] . '.' . $environment['id'];
-                        list(, $env) = $this->getSiteEnv($site_env);
+                        $show = ($options['env'] == 'all') ? true : ($environment['id'] == $options['env']);
+                        if ($show) {
+                            $site_env = $site['name'] . '.' . $environment['id'];
+                            list(, $env) = $this->getSiteEnv($site_env);
 
-                        if (isset($options['element'])) {
-                            $element = ($options['element'] == 'db') ? 'database' : $options['element'];
-                            $elements = ["'" . $element . "'",];
-                        } else {
-                            $elements = ['code', 'database', 'files',];
-                        }
-                        foreach ($elements as $element) {
-                            $backups = $env->getBackups()->getFinishedBackups($element);
-                            if (empty($backups)) {
-                                $this->log()->notice(
-                                    'No backups available for the {element} element of {site_env}.',
-                                    ['element' => $element, 'site_env' => $site_env,]
-                                );
+                            if (isset($options['element'])) {
+                                $element = ($options['element'] == 'db') ? 'database' : $options['element'];
+                                $elements = ["'" . $element . "'",];
                             } else {
-                                $backup = array_shift($backups);
-                                $rows[] = [
-                                    'env' => $site_env,
-                                    'element' => ($element == 'database') ? 'db' : $element,
-                                    'url' => $backup->getUrl(),
-                                ];
+                                $elements = ['code', 'database', 'files',];
+                            }
+                            foreach ($elements as $element) {
+                                $backups = $env->getBackups()->getFinishedBackups($element);
+                                if (empty($backups)) {
+                                    $this->log()->notice(
+                                        'No backups available for the {element} element of {site_env}.',
+                                        ['element' => $element, 'site_env' => $site_env,]
+                                    );
+                                } else {
+                                    $backup = array_shift($backups);
+                                    $rows[] = [
+                                        'env' => $site_env,
+                                        'element' => ($element == 'database') ? 'db' : $element,
+                                        'url' => $backup->getUrl(),
+                                    ];
+                                }
                             }
                         }
                     }

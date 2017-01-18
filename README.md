@@ -5,15 +5,11 @@
 
 Terminus plugin to backup all available Pantheon sites with one command.
 
-## Installation:
-
-Refer to the [Terminus Wiki](https://github.com/pantheon-systems/terminus/wiki/Plugins).
-
 ## Usage:
 ```
-$ terminus sites backup-all [--env=<id>] [--element=<element>] [--changes=<change>]
+$ terminus backup-all:[create|get|list] [--env=<id>] [--element=<element>] [--changes=<change>]
 ```
-The associative arguments are all optional and the same filtering rules as the `terminus sites list` command apply.
+The associative arguments are all optional.
 
 The **--env** argument value filters by environment and defaults to **all**.  Valid values also include **dev, test, live** or any valid multi-site environment.
 
@@ -23,24 +19,33 @@ The **--changes** argument is only necessary when the environment is in sftp con
 
 ## Examples:
 ```
-$ terminus sites ba
+$ terminus ball:list
 ```
-This is an alias for the `terminus sites backup-all` command and will backup all elements in all environments of all available sites simultaneously
+This is an alias for the `terminus backup-all:list` command and will list the backups of all elements in all available site environments
 ```
-$ terminus sites ba --env=dev
+$ terminus ball:list --env=dev
 ```
-Backup all elements in the dev environment only of all available sites
+List the backups of all elements in the dev environment only of all available sites
 ```
-$ terminus sites ba --element=code
+$ terminus ball:list --element=code
 ```
-Backup the code only for all environments of all available sites
+List the backups of the code only for all available site environments
 ```
-$ terminus sites ba --env=dev --element=code --changes=ignore
+$ terminus ball:create --env=dev --element=code --changes=ignore
 ```
 Backup the code only of the dev environment only for all available sites and perform the backup without committing pending filesystem changes
 
-## Example crontab entry:
+## Installation:
+For installation help, see [Manage Plugins](https://pantheon.io/docs/terminus/plugins/).
+
 ```
-# Backup all Pantheon sites daily at 3 AM.
-0 3 * * * $HOME/.composer/vendor/bin/terminus sites backup-all 2>&1 >> /var/log/pantheon-backup.log
+mkdir -p ~/.terminus/plugins
+composer create-project -d ~/.terminus/plugins terminus-plugin-project/terminus-backup-all-plugin:~1
 ```
+
+## Configuration:
+
+This plugin requires no configuration to use.
+
+## Help:
+Run `terminus help ball:[create|get|list]` for help.
