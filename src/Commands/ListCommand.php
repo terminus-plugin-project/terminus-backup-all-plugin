@@ -8,10 +8,10 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class BackupAllListCommand
+ * Class ListCommand
  * @package TerminusPluginProject\TerminusBackupAll\Commands;
  */
-class BackupAllListCommand extends TerminusCommand implements SiteAwareInterface
+class ListCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
@@ -25,6 +25,7 @@ class BackupAllListCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @option string $env [dev|test|live] Backup environment filter
      * @option string $element [code|files|database|db] Backup element filter
+     * @option string $date [YYYY-MM-DD] Backup date filter
      *
      * @usage terminus backup-all:list
      *     Lists all backups in all site environments.
@@ -38,7 +39,7 @@ class BackupAllListCommand extends TerminusCommand implements SiteAwareInterface
      *     initiator: Initiator
      * @return RowsOfFields
      */
-    public function listBackups($options = ['env' => 'all', 'element' => 'all',])
+    public function listBackups($options = ['env' => 'all', 'element' => 'all', 'date' => null,])
     {
         $rows = [];
         $element = $options['element'];
@@ -74,6 +75,17 @@ class BackupAllListCommand extends TerminusCommand implements SiteAwareInterface
             }
         }
 
+        if (!empty($rows)) {
+            if (isset($options['date'])) {
+                $new_rows = [];
+                foreach ($rows as $row) {
+                    if (strpos($row['date'], $options['date']) !== false) {
+                        $new_rows[] = $row;
+                    }
+                }
+                $rows = $new_rows;
+            }
+        }
         $this->log()->notice('You have {count} backups.', ['count' => count($rows),]);
         if (!empty($rows)) {
             return new RowsOfFields($rows);

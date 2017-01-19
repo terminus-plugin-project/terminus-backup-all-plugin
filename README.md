@@ -7,7 +7,7 @@ Terminus plugin to backup all available Pantheon sites with one command.
 
 ## Usage:
 ```
-$ terminus backup-all:[create|get|list] [--env=<id>] [--element=<element>] [--changes=<change>]
+$ terminus backup-all:[create|get|list] [--env=<id>] [--element=<element>] [--date=<YYYY-MM-DD>] [--changes=<change>]
 ```
 The associative arguments are all optional.
 
@@ -18,6 +18,14 @@ The **--element** argument value filters by element and defaults to **all**.  Va
 The **--changes** argument is only necessary when the environment is in sftp connection mode and decides how to handle pending filesystem changes.  Valid values include **commit, ignore or skip** and the default is **commit** which will create an automatic commit of any pending filesystem changes before completing the backup.  The difference between **ignore** and **skip** is **ignore** will continue and make the backup anyway *(without pending filesystem changes)*, whereas **skip** will not.
 
 ## Examples:
+```
+$ terminus ball:create
+```
+This is an alias for the `terminus backup-all:create` command and will backup all elements of all environments for all available sites and perform the backup after committing pending filesystem changes
+```
+$ terminus ball:create --env=dev --element=code --changes=ignore
+```
+Backup the code only of the dev environment only for all available sites and perform the backup without committing pending filesystem changes
 ```
 $ terminus ball:list
 ```
@@ -31,9 +39,21 @@ $ terminus ball:list --element=code
 ```
 List the backups of the code only for all available site environments
 ```
-$ terminus ball:create --env=dev --element=code --changes=ignore
+$ terminus ball:list --date=YYYY-MM-DD
 ```
-Backup the code only of the dev environment only for all available sites and perform the backup without committing pending filesystem changes
+List the backups for all available site environments on the specified date
+```
+$ terminus ball:get
+```
+This is an alias for the `terminus backup-all:get` command and will retrieve the latest files backup for all available site environments
+```
+$ terminus ball:get --element=db
+```
+Retrieve the latest database backup for all available site environments
+```
+$ terminus ball:get --env=dev --element=code --date=YYYY-MM-DD
+```
+Retrieve the latest code backup of the dev environment only for all available sites on the specified date
 
 ## Installation:
 For installation help, see [Manage Plugins](https://pantheon.io/docs/terminus/plugins/).

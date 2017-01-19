@@ -9,10 +9,10 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
- * Class BackupAllGetCommand
+ * Class GetCommand
  * @package TerminusPluginProject\TerminusBackupAll\Commands
  */
-class BackupAllGetCommand extends TerminusCommand implements SiteAwareInterface
+class GetCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
@@ -26,6 +26,7 @@ class BackupAllGetCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @option string $env [dev|test|live] Backup environment to retrieve
      * @option string $element [code|files|database|db] Backup element to retrieve
+     * @option string $date [YYYY-MM-DD] Backup date to retrieve
      * @throws TerminusNotFoundException
      *
      * @usage terminus backup-all:get
@@ -34,12 +35,10 @@ class BackupAllGetCommand extends TerminusCommand implements SiteAwareInterface
      *     Displays the URL for the most recent code backup of all site environments.
      *
      * @field-labels
-     *     env: Environment
-     *     element: Element
      *     url: URL
      * @return RowsOfFields
      */
-    public function getBackup(array $options = ['env' => 'all', 'element' => null,])
+    public function getBackup(array $options = ['env' => 'all', 'element' => null, 'date' => null,])
     {
         $rows = [];
         $sites = $this->sites->serialize();
@@ -65,11 +64,17 @@ class BackupAllGetCommand extends TerminusCommand implements SiteAwareInterface
                                         'No backups available for the {element} element of {site_env}.',
                                         ['element' => $element, 'site_env' => $site_env,]
                                     );
+                                } elseif (isset($options['date'])) {
+                                    foreach ($backups as $backup) {
+                                        if (strpos($backup->getDate(), $options['date']) !== false) {
+                                            $rows[] = [
+                                                'url' => $backup->getUrl(),
+                                            ];
+                                        }
+                                    }
                                 } else {
                                     $backup = array_shift($backups);
                                     $rows[] = [
-                                        'env' => $site_env,
-                                        'element' => ($element == 'database') ? 'db' : $element,
                                         'url' => $backup->getUrl(),
                                     ];
                                 }
