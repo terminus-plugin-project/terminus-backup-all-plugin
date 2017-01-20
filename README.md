@@ -7,19 +7,19 @@ Terminus plugin to backup all available Pantheon sites with one command.
 
 ## Usage:
 ```
-$ terminus backup-all:[create|get|list] [--env=<id>] [--element=<element>] [--date=<YYYY-MM-DD>] [--changes=<change>]
+$ terminus backup-all:[create|get|list] [--env=<id>] [--element=<element>] [--skip=<items>] [--date=<YYYY-MM-DD>] [--changes=<change>]
 ```
 The associative arguments are all optional.
 
-The **--env** argument value filters by environment.  Valid values also include **dev, test, live** or any valid multi-site environment.
+The **--env** option value filters by environment.  Valid values include **dev, test, live** or any valid multi-site environment.
 
-The **--element** argument value filters by element.  Valid values also include **code, database or files**.
+The **--element** option value filters by element.  Valid values include **code, database or files**.
 
-The **--skip** argument value is a comma separated list of elements, entire environments or specific site environment to omit from backups.
+The **--skip** option value is a comma separated list of elements, entire environments or specific site environment to omit from backups.
 
-The **--date** argument value filters by a specified date and returns the backups for any date if omitted.
+The **--date** option value filters by a specified date and returns the backups for any date if omitted.
 
-The **--changes** argument is only necessary when the environment is in sftp connection mode and decides how to handle pending filesystem changes.  Valid values include **commit, ignore or skip** and the default is **commit** which will create an automatic commit of any pending filesystem changes before completing the backup.  The difference between **ignore** and **skip** is **ignore** will continue and make the backup anyway *(without pending filesystem changes)*, whereas **skip** will not.
+The **--changes** option is only necessary when the environment is in sftp connection mode and decides how to handle pending filesystem changes.  Valid values include **commit, ignore or skip** and the default is **commit** which will create an automatic commit of any pending filesystem changes before completing the backup.  The difference between **ignore** and **skip** is **ignore** will continue and make the backup anyway *(without pending filesystem changes)*, whereas **skip** will not.
 
 ## Examples:
 ```
@@ -69,7 +69,7 @@ composer create-project -d ~/.terminus/plugins terminus-plugin-project/terminus-
 
 ## Configuration:
 
-If you wish to automate backups, see the core `terminus backup` command.
+If you wish to automate backups, see the core `terminus backup:automatic` command.
 
 ## Help:
 Run `terminus help ball:[create|get|list]` for help.

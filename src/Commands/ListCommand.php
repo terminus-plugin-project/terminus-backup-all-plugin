@@ -16,7 +16,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Lists backups for all site environments.
+     * Lists backups of all site environments.
      *
      * @authorize
      *

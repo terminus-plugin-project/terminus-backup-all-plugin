@@ -16,7 +16,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Creates a backup of all site environments.
+     * Creates backups of all site environments.
      *
      * @authorize
      *
