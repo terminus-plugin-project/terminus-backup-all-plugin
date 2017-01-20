@@ -2,14 +2,35 @@
     "name": "terminus-plugin-project/terminus-backup-all-plugin",
     "description": "Terminus plugin to backup all available Pantheon sites with one command",
     "homepage": "https://github.com/terminus-plugin-project/terminus-backup-all-plugin",
+    "authors": [
+        {
+            "name": "Ed Reel",
+            "email": "edreel@gmail.com",
+            "homepage": "https://github.com/uberhacker",
+            "role": "Developer"
+        }
+    ],
     "type": "terminus-plugin",
+    "keywords": [
+        "pantheon",
+        "terminus",
+        "backup",
+        "plugin"
+    ],
+    "support": {
+				"irc": "https://pantheon-community.slack.com/#terminus-plugins",
+				"issues": "https://github.com/terminus-plugin-project/terminus-backup-all-plugin/issues"
+    },
     "license": "MIT",
+    "require": {
+        "php": "^5.5 || ^7.0"
+    },
     "autoload": {
         "psr-4": { "TerminusPluginProject\\TerminusBackupAll\\": "src" }
     },
-		"extra": {
-				"terminus": {
-						"compatible-version": "^1"
-				}
+    "extra": {
+        "terminus": {
+            "compatible-version": "^1"
+        }
     }
 }

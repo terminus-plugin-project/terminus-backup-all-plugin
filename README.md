@@ -11,9 +11,11 @@ $ terminus backup-all:[create|get|list] [--env=<id>] [--element=<element>] [--da
 ```
 The associative arguments are all optional.
 
-The **--env** argument value filters by environment and defaults to **all**.  Valid values also include **dev, test, live** or any valid multi-site environment.
+The **--env** argument value filters by environment.  Valid values also include **dev, test, live** or any valid multi-site environment.
 
-The **--element** argument value filters by element and defaults to **all**.  Valid values also include **code, database or files**.
+The **--element** argument value filters by element.  Valid values also include **code, database or files**.
+
+The **--skip** argument value is a comma separated list of elements, entire environments or specific site environment to omit from backups.
 
 The **--date** argument value filters by a specified date and returns the backups for any date if omitted.
 
@@ -25,9 +27,9 @@ $ terminus ball:create
 ```
 This is an alias for the `terminus backup-all:create` command and will backup all elements of all environments for all available sites and perform the backup after committing pending filesystem changes
 ```
-$ terminus ball:create --env=dev --element=code --changes=ignore
+$ terminus ball:create --env=dev --element=code --changes=ignore --skip=test,my-experiment.dev
 ```
-Backup the code only of the dev environment only for all available sites and perform the backup without committing pending filesystem changes
+Backup the code only of the dev environment only for all available sites and perform the backup without committing pending filesystem changes, skipping all test environments and the specific site environment 'my-experiment.dev'
 ```
 $ terminus ball:list
 ```
@@ -67,7 +69,7 @@ composer create-project -d ~/.terminus/plugins terminus-plugin-project/terminus-
 
 ## Configuration:
 
-This plugin requires no configuration to use.
+If you wish to automate backups, see the core `terminus backup` command.
 
 ## Help:
 Run `terminus help ball:[create|get|list]` for help.

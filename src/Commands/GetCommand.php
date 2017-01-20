@@ -38,7 +38,7 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
      *     url: URL
      * @return RowsOfFields
      */
-    public function getBackup(array $options = ['env' => 'all', 'element' => null, 'date' => null,])
+    public function getBackup(array $options = ['env' => null, 'element' => null, 'date' => null,])
     {
         $rows = [];
         $sites = $this->sites->serialize();
@@ -46,14 +46,14 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
             if ($environments = $this->getSite($site['name'])->getEnvironments()->serialize()) {
                 foreach ($environments as $environment) {
                     if ($environment['initialized'] == 'true') {
-                        $show = ($options['env'] == 'all') ? true : ($environment['id'] == $options['env']);
+                        $show = !isset($options['env']) ? true : ($environment['id'] == $options['env']);
                         if ($show) {
                             $site_env = $site['name'] . '.' . $environment['id'];
                             list(, $env) = $this->getSiteEnv($site_env);
 
                             if (isset($options['element'])) {
                                 $element = ($options['element'] == 'db') ? 'database' : $options['element'];
-                                $elements = ["'" . $element . "'",];
+                                $elements = [$element];
                             } else {
                                 $elements = ['code', 'database', 'files',];
                             }
