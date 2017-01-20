@@ -18,8 +18,8 @@
         "plugin"
     ],
     "support": {
-				"irc": "https://pantheon-community.slack.com/#terminus-plugins",
-				"issues": "https://github.com/terminus-plugin-project/terminus-backup-all-plugin/issues"
+        "irc": "https://pantheon-community.slack.com/#terminus-plugins",
+        "issues": "https://github.com/terminus-plugin-project/terminus-backup-all-plugin/issues"
     },
     "license": "MIT",
     "require": {
