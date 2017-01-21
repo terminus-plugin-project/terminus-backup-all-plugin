@@ -47,6 +47,10 @@ $ terminus ball:list --date=YYYY-MM-DD
 ```
 List the backups for all available site environments on the specified date.
 ```
+$ terminus ball:list --name=awesome --date=YYYY-MM-DD
+```
+List the backups for all available site environments on the specified date that contain awesome in the name.
+```
 $ terminus ball:get
 ```
 This is an alias for the `terminus backup-all:get` command and will retrieve the latest files backup for all available site environments.
@@ -62,6 +66,10 @@ Retrieve the latest database backup for all available site environments.
 $ terminus ball:get --env=dev --element=code --date=YYYY-MM-DD
 ```
 Retrieve the latest code backup of the dev environment only for all available sites on the specified date.
+```
+$ terminus ball:get --name=awesome --date=YYYY-MM-DD
+```
+Retrieve the latest files backup for all available site environments on the specified date that contain `awesome` in the name.
 
 ## Installation:
 For installation help, see [Manage Plugins](https://pantheon.io/docs/terminus/plugins/).

@@ -26,11 +26,27 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @option string $env [dev|test|live] Backup environment filter
      * @option string $element [code|files|database|db] Backup element filter
      * @option string $date [YYYY-MM-DD] Backup date filter
+     * @option string $team Team-only filter
+     * @option string $owner Owner filter; "me" or user UUID
+     * @option string $org Organization filter; "all" or organization UUID
+     * @option string $name Name filter
      *
      * @usage terminus backup-all:list
      *     Lists all backups in all site environments.
      * @usage terminus backup-all:list --element=<element>
      *     Lists all <element> backups of all site environments.
+     * @usage terminus backup-all:list --team
+     *     Lists all backups of which the currently logged-in user is a member of the team.
+     * @usage terminus backup-all:list --owner=<user>
+     *     Lists all backups owned by the user with UUID <user>.
+     * @usage terminus backup-all:list --owner=me
+     *     Lists all backups owned by the currently logged-in user.
+     * @usage terminus backup-all:list --org=<org>
+     *     Lists all backups associated with the <org> organization.
+     * @usage terminus backup-all:list --org=all
+     *     Lists all backups associated with any organization of which the currently logged-in is a member.
+     * @usage terminus backup-all:list --name=<regex>
+     *     Lists all backups with a name that matches <regex>.
      *
      * @field-labels
      *     file: Filename
@@ -39,11 +55,34 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *     initiator: Initiator
      * @return RowsOfFields
      */
-    public function listBackups($options = ['env' => 'all', 'element' => 'all', 'date' => null,])
+    public function listBackups($options = ['env' => 'all', 'element' => 'all', 'date' => null, 'team' => false, 'owner' => null, 'org' => null, 'name' => null,])
     {
+        // Filter sites, if necessary.
+        $this->sites()->fetch(
+            [
+                'org_id' => isset($options['org']) ? $options['org'] : null,
+                'team_only' => isset($options['team']) ? $options['team'] : false,
+            ]
+        );
+
+        if (isset($options['name']) && !is_null($name = $options['name'])) {
+            $this->sites->filterByName($name);
+        }
+        if (isset($options['owner']) && !is_null($owner = $options['owner'])) {
+            if ($owner == 'me') {
+                $owner = $this->session()->getUser()->id;
+            }
+            $this->sites->filterByOwner($owner);
+        }
+
+        $sites = $this->sites->serialize();
+
+        if (empty($sites)) {
+            $this->log()->notice('You have no sites.');
+        }
+
         $rows = [];
         $element = $options['element'];
-        $sites = $this->sites->serialize();
         foreach ($sites as $site) {
             if ($environments = $this->getSite($site['name'])->getEnvironments()->serialize()) {
                 foreach ($environments as $environment) {
