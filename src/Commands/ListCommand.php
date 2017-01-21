@@ -26,7 +26,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @option string $env [dev|test|live] Backup environment filter
      * @option string $element [code|files|database|db] Backup element filter
      * @option string $date [YYYY-MM-DD] Backup date filter
-     * @option string $team Team-only filter
+     * @option flag $team Team-only filter
      * @option string $owner Owner filter; "me" or user UUID
      * @option string $org Organization filter; "all" or organization UUID
      * @option string $name Name filter

@@ -27,7 +27,7 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
      * @option string $env [dev|test|live] Backup environment to retrieve
      * @option string $element [code|files|database|db] Backup element to retrieve
      * @option string $date [YYYY-MM-DD] Backup date to retrieve
-     * @option string $team Team-only filter
+     * @option flag $team Team-only filter
      * @option string $owner Owner filter; "me" or user UUID
      * @option string $org Organization filter; "all" or organization UUID
      * @option string $name Name filter

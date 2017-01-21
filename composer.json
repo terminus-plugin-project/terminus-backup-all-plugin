@@ -1,6 +1,6 @@
 {
     "name": "terminus-plugin-project/terminus-backup-all-plugin",
-    "description": "Terminus plugin to backup all available Pantheon sites with one command",
+    "description": "Backup All - A Terminus plugin to backup all available Pantheon sites with one command.",
     "homepage": "https://github.com/terminus-plugin-project/terminus-backup-all-plugin",
     "authors": [
         {

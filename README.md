@@ -7,7 +7,7 @@ Terminus plugin to backup all available Pantheon sites with one command.
 
 ## Usage:
 ```
-$ terminus backup-all:[create|get|list] [--env=<id>] [--element=<element>] [--skip=<items>] [--date=<YYYY-MM-DD>] [--changes=<change>]
+$ terminus backup-all:[create|get|list] [--env=<id>] [--element=<element>] [--skip=<items>] [--date=<YYYY-MM-DD>] [--changes=<change>] [--team] [--owner=<user>] [--org=<org>] [--name=<regex>]
 ```
 The associative arguments are all optional and the same filtering rules as the `terminus sites:list` command apply.
 

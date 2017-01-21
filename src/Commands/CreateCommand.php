@@ -28,7 +28,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      * @option string $skip Comma separated list of elements, entire environments or specific site environments to omit from backups
      * @option string $changes [commit|skip|ignore] Determine how to handle pending filesystem changes
      * @option integer $keep-for Retention period, in days, to retain backup
-     * @option string $team Team-only filter
+     * @option flag $team Team-only filter
      * @option string $owner Owner filter; "me" or user UUID
      * @option string $org Organization filter; "all" or organization UUID
      * @option string $name Name filter
