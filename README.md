@@ -9,13 +9,13 @@ Terminus plugin to backup all available Pantheon sites with one command.
 ```
 $ terminus backup-all:[create|get|list] [--env=<id>] [--element=<element>] [--skip=<items>] [--date=<YYYY-MM-DD>] [--changes=<change>]
 ```
-The associative arguments are all optional.
+The associative arguments are all optional and the same filtering rules as the `terminus sites:list` command apply.
 
 The **--env** option value filters by environment.  Valid values include **dev, test, live** or any valid multi-site environment.
 
 The **--element** option value filters by element.  Valid values include **code, database or files**.
 
-The **--skip** option value is a comma separated list of elements, entire environments or specific site environment to omit from backups.
+The **--skip** option value is a comma separated list of one or more elements, entire environments or specific site environments to omit from backups.
 
 The **--date** option value filters by a specified date and returns the backups for any date if omitted.
 
@@ -25,39 +25,43 @@ The **--changes** option is only necessary when the environment is in sftp conne
 ```
 $ terminus ball:create
 ```
-This is an alias for the `terminus backup-all:create` command and will backup all elements of all environments for all available sites and perform the backup after committing pending filesystem changes
+This is an alias for the `terminus backup-all:create` command and will backup all elements of all environments for all available sites and perform the backup after committing pending filesystem changes.
 ```
 $ terminus ball:create --env=dev --element=code --changes=ignore --skip=test,my-experiment.dev
 ```
-Backup the code only of the dev environment only for all available sites and perform the backup without committing pending filesystem changes, skipping all test environments and the specific site environment 'my-experiment.dev'
+Backup the code only of the dev environment only for all available sites and perform the backup without committing pending filesystem changes, skipping all test environments and the specific site environment `my-experiment.dev`.
 ```
 $ terminus ball:list
 ```
-This is an alias for the `terminus backup-all:list` command and will list the backups of all elements in all available site environments
+This is an alias for the `terminus backup-all:list` command and will list the backups of all elements in all available site environments.
 ```
 $ terminus ball:list --env=dev
 ```
-List the backups of all elements in the dev environment only of all available sites
+List the backups of all elements in the dev environment only of all available sites.
 ```
 $ terminus ball:list --element=code
 ```
-List the backups of the code only for all available site environments
+List the backups of the code only for all available site environments.
 ```
 $ terminus ball:list --date=YYYY-MM-DD
 ```
-List the backups for all available site environments on the specified date
+List the backups for all available site environments on the specified date.
 ```
 $ terminus ball:get
 ```
-This is an alias for the `terminus backup-all:get` command and will retrieve the latest files backup for all available site environments
+This is an alias for the `terminus backup-all:get` command and will retrieve the latest files backup for all available site environments.
+```
+$ terminus ball:get --name=awesome
+```
+Retrieve the latest files backup for all available site environments that contain `awesome` in the name.
 ```
 $ terminus ball:get --element=db
 ```
-Retrieve the latest database backup for all available site environments
+Retrieve the latest database backup for all available site environments.
 ```
 $ terminus ball:get --env=dev --element=code --date=YYYY-MM-DD
 ```
-Retrieve the latest code backup of the dev environment only for all available sites on the specified date
+Retrieve the latest code backup of the dev environment only for all available sites on the specified date.
 
 ## Installation:
 For installation help, see [Manage Plugins](https://pantheon.io/docs/terminus/plugins/).

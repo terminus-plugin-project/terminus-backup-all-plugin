@@ -28,6 +28,10 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      * @option string $skip Comma separated list of elements, entire environments or specific site environments to omit from backups
      * @option string $changes [commit|skip|ignore] Determine how to handle pending filesystem changes
      * @option integer $keep-for Retention period, in days, to retain backup
+     * @option string $team Team-only filter
+     * @option string $owner Owner filter; "me" or user UUID
+     * @option string $org Organization filter; "all" or organization UUID
+     * @option string $name Name filter
      *
      * @usage terminus backup-all:create
      *     Creates a backup of all elements in all site environments and automatically commits any pending filesystem changes.
@@ -43,8 +47,20 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      *     Creates a backup of all elements in all site environments, automatically commits any pending filesystem changes and retains it for <days> days.
      * @usage terminus backup-all:create --element=<element> --keep-for=<days>
      *     Creates a backup of <element> elements only in all site environments, automatically commits any pending filesystem changes and retains it for <days> days.
+     * @usage terminus backup-all:create --team
+     *     Creates a backup of all elements in all site environments of which the currently logged-in user is a member of the team.
+     * @usage terminus backup-all:create --owner=<user>
+     *     Creates a backup of all elements in all site environments owned by the user with UUID <user>.
+     * @usage terminus backup-all:create --owner=me
+     *     Creates a backup of all elements in all site environments owned by the currently logged-in user.
+     * @usage terminus backup-all:create --org=<org>
+     *     Creates a backup of all elements in all site environments associated with the <org> organization.
+     * @usage terminus backup-all:create --org=all
+     *     Creates a backup of all elements in all site environments associated with any organization of which the currently logged-in is a member.
+     * @usage terminus backup-all:create --name=<regex>
+     *     Creates a backup of all elements in all site environments with a name that matches <regex>.
      */
-    public function create($options = ['env' => null, 'element' => null, 'skip' => null, 'changes' => 'commit', 'keep-for' => 365,])
+    public function create($options = ['env' => null, 'element' => null, 'skip' => null, 'changes' => 'commit', 'keep-for' => 365, 'team' => false, 'owner' => null, 'org' => null, 'name' => null,])
     {
         // Validate the --element options value.
         $elements = ['code', 'database', 'files',];
@@ -54,7 +70,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
                 $element = 'database';
             }
             if (!in_array($element, $elements)) {
-                $message = 'Invalid --element argument value.  Allowed values are code, database or files.';
+                $message = 'Invalid --element option value.  Allowed values are code, database or files.';
                 throw new TerminusNotFoundException($message);
             }
             $elements = [$element];
@@ -64,7 +80,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
         $change = $options['changes'];
         $changes = ['commit', 'ignore', 'skip',];
         if (!in_array($change, $changes)) {
-            $message = 'Invalid --changes argument value.  Allowed values are commit, ignore or skip.';
+            $message = 'Invalid --changes option value.  Allowed values are commit, ignore or skip.';
             throw new TerminusNotFoundException($message);
         }
 
@@ -74,8 +90,31 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
             $skips = explode(',', $options['skip']);
         }
 
-        $count = 0;
+        // Filter sites, if necessary.
+        $this->sites()->fetch(
+            [
+                'org_id' => isset($options['org']) ? $options['org'] : null,
+                'team_only' => isset($options['team']) ? $options['team'] : false,
+            ]
+        );
+
+        if (isset($options['name']) && !is_null($name = $options['name'])) {
+            $this->sites->filterByName($name);
+        }
+        if (isset($options['owner']) && !is_null($owner = $options['owner'])) {
+            if ($owner == 'me') {
+                $owner = $this->session()->getUser()->id;
+            }
+            $this->sites->filterByOwner($owner);
+        }
+
         $sites = $this->sites->serialize();
+
+        if (empty($sites)) {
+            $this->log()->notice('You have no sites.');
+        }
+
+        $count = 0;
         foreach ($sites as $site) {
             if ($environments = $this->getSite($site['name'])->getEnvironments()->serialize()) {
                 foreach ($environments as $environment) {
@@ -108,11 +147,9 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
                                         if (!empty($diff)) {
                                             switch ($change) {
                                                 case 'commit':
-                                                    $message = 'Start automatic backup commit for {site_env}.';
-                                                    $this->log()->notice($message, ['site_env' => $site_env,]);
                                                     $message = 'Automatic backup commit of pending filesystem changes.';
                                                     $workflow = $env->commitChanges($message);
-                                                    $message = 'End automatic backup commit for {site_env}.';
+                                                    $message = 'Automatic backup commit of pending filesystem changes pushed for {site_env}.';
                                                     $this->log()->notice($message, ['site_env' => $site_env,]);
                                                     break;
 
