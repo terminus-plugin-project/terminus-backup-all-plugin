@@ -11,7 +11,7 @@ $ terminus backup-all:[create|get|list] [--env=<id>] [--element=<element>] [--sk
 ```
 The associative arguments are all optional and the same filtering rules as the `terminus sites:list` command apply.
 
-The **--env** option value filters by environment.  Valid values include **dev, test, live** or any valid multi-site environment.
+The **--env** option value filters by environment.  Valid values include **dev, test, live** or any valid multidev environment.
 
 The **--element** option value filters by element.  Valid values include **code, database or files**.
 
@@ -19,7 +19,7 @@ The **--skip** option value is a comma separated list of one or more elements, e
 
 The **--date** option value filters by a specified date and returns the backups for any date if omitted.
 
-The **--changes** option is only necessary when the environment is in sftp connection mode and decides how to handle pending filesystem changes.  Valid values include **commit, ignore or skip** and the default is **commit** which will create an automatic commit of any pending filesystem changes before completing the backup.  The difference between **ignore** and **skip** is **ignore** will continue and make the backup anyway *(without pending filesystem changes)*, whereas **skip** will not.
+The **--changes** option is only necessary when the environment is in sftp connection mode and decides how to handle pending filesystem changes.  Valid values include **commit, ignore or skip** and the default is **commit** which will create an automatic commit of any pending filesystem changes before completing the backup.  The difference between **ignore** and **skip** is **ignore** will continue and make the backup anyway *_(without pending filesystem changes)_*, whereas **skip** will not.
 
 ## Examples:
 ```
@@ -27,9 +27,9 @@ $ terminus ball:create
 ```
 This is an alias for the `terminus backup-all:create` command and will backup all elements of all environments for all available sites and perform the backup after committing pending filesystem changes.
 ```
-$ terminus ball:create --env=dev --element=code --changes=ignore --skip=test,my-experiment.dev
+$ terminus ball:create --element=code --changes=ignore --skip=test,my-experiment.dev
 ```
-Backup the code only of the dev environment only for all available sites and perform the backup without committing pending filesystem changes, skipping all test environments and the specific site environment `my-experiment.dev`.
+Backup the code only of all environments for all available sites and perform the backup without committing pending filesystem changes, skipping all test environments and the specific site environment `my-experiment.dev`.
 ```
 $ terminus ball:list
 ```
@@ -49,7 +49,7 @@ List the backups for all available site environments on the specified date.
 ```
 $ terminus ball:list --name=awesome --date=YYYY-MM-DD
 ```
-List the backups for all available site environments on the specified date that contain awesome in the name.
+List the backups for all available site environments on the specified date that contain `awesome` in the name.
 ```
 $ terminus ball:get
 ```
@@ -80,7 +80,6 @@ composer create-project -d ~/.terminus/plugins terminus-plugin-project/terminus-
 ```
 
 ## Configuration:
-
 If you wish to automate backups, see the core `terminus backup:automatic` command.
 
 ## Help:
