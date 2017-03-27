@@ -6,10 +6,10 @@
 # Test plugin 'get' command
 #
 
-UTC_DATE=$(date --date='TZ="Etc/UTC"' +%Y-%m-%d)
+TODAY=$(date +%Y-%m-%d)
 
 @test "output of plugin 'get' command" {
-  run terminus backup-all:get --name=$TERMINUS_SITE --date=$UTC_DATE
+  run terminus backup-all:get --name=$TERMINUS_SITE --date=$TODAY
   [[ "$output" == *"${TERMINUS_SITE}"* ]]
   [ "$status" -eq 0 ]
 }
