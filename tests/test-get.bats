@@ -6,7 +6,7 @@
 # Test plugin 'get' command
 #
 
-TODAY=$(date +%Y-%m-%d)
+TODAY=$(date --date="tomorrow" +%Y-%m-%d)
 
 @test "output of plugin 'get' command" {
   run terminus backup-all:get --name=$TERMINUS_SITE --date=$TODAY

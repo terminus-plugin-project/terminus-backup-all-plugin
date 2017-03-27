@@ -6,7 +6,7 @@
 # Test plugin 'list' command
 #
 
-TODAY=$(date +%Y-%m-%d)
+TODAY=$(date --date="tomorrow" +%Y-%m-%d)
 
 @test "output of plugin 'list' command" {
   run terminus backup-all:list --name=$TERMINUS_SITE --date=$TODAY

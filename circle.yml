@@ -10,8 +10,6 @@ machine:
     PATH: $PATH:~/.composer/vendor/bin:~/.config/composer/vendor/bin:$HOME/bin
 
 dependencies:
-  pre:
-    - sudo apt-get update; sudo apt-get install sshfs
   cache_directories:
     - ~/.composer/cache
   override:
