@@ -1,5 +1,8 @@
 # Terminus Backup All Plugin
 
+Version 1.x
+
+[![CircleCI](https://circleci.com/gh/terminus-plugin-project/terminus-backup-all-plugin.svg?style=shield)](https://circleci.com/gh/terminus-plugin-project/terminus-backup-all-plugin)
 [![Terminus v1.x Compatible](https://img.shields.io/badge/terminus-v1.x-green.svg)](https://github.com/terminus-plugin-project/terminus-backup-all-plugin/tree/1.x)
 [![Terminus v0.x Compatible](https://img.shields.io/badge/terminus-v0.x-green.svg)](https://github.com/terminus-plugin-project/terminus-backup-all-plugin/tree/0.x)
 
@@ -77,6 +80,16 @@ For installation help, see [Manage Plugins](https://pantheon.io/docs/terminus/pl
 ```
 mkdir -p ~/.terminus/plugins
 composer create-project -d ~/.terminus/plugins terminus-plugin-project/terminus-backup-all-plugin:~1
+```
+
+## Testing:
+
+Replace `my-test-site` with the site you want to test:
+```
+export TERMINUS_SITE=my-test-site
+cd ~/.terminus/plugins/terminus-backup-all-plugin
+composer install
+composer test
 ```
 
 ## Configuration:
