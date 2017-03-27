@@ -12,7 +12,7 @@ Terminus plugin to backup all available Pantheon sites with one command.
 ```
 $ terminus backup-all:[create|get|list] [--env=<id>] [--element=<element>] [--skip=<items>] [--date=<YYYY-MM-DD>] [--changes=<change>] [--team] [--owner=<user>] [--org=<org>] [--name=<regex>]
 ```
-The associative arguments are all optional and the same filtering rules as the `terminus sites:list` command apply.
+The associative arguments are all optional and the same filtering rules as the `terminus site:list` command apply.
 
 The **--env** option value filters by environment.  Valid values include **dev, test, live** or any valid multidev environment.
 
@@ -75,7 +75,7 @@ $ terminus ball:get --name=awesome --date=YYYY-MM-DD
 Retrieve the latest files backup for all available site environments on the specified date that contain `awesome` in the name.
 
 ## Installation:
-For installation help, see [Manage Plugins](https://pantheon.io/docs/terminus/plugins/).
+For installation help, see [Extend with Plugins](https://pantheon.io/docs/terminus/plugins/).
 
 ```
 mkdir -p ~/.terminus/plugins
