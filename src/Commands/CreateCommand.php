@@ -32,6 +32,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      * @option string $owner Owner filter; "me" or user UUID
      * @option string $org Organization filter; "all" or organization UUID
      * @option string $name Name filter
+     * @option boolean $async Async Requests
      *
      * @usage terminus backup-all:create
      *     Creates a backup of all elements in all site environments and automatically commits any pending filesystem changes.
@@ -59,9 +60,12 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      *     Creates a backup of all elements in all site environments associated with any organization of which the currently logged-in is a member.
      * @usage terminus backup-all:create --name=<regex>
      *     Creates a backup of all elements in all site environments with a name that matches <regex>.
+     * @usage terminus backup-all:create --async
+     *     Creates a backup of all elements but does not wait for backup to finish request is done asynchronous.
      */
-    public function create($options = ['env' => null, 'element' => null, 'skip' => null, 'changes' => 'commit', 'keep-for' => 365, 'team' => false, 'owner' => null, 'org' => null, 'name' => null,])
+    public function create($options = ['env' => null, 'element' => null, 'skip' => null, 'changes' => 'commit', 'keep-for' => 365, 'team' => false, 'owner' => null, 'org' => null, 'name' => null, 'async' => false])
     {
+        $async = $options['async'];
         // Validate the --element options value.
         $elements = ['code', 'database', 'files',];
         if (isset($options['element'])) {
@@ -172,12 +176,18 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
                                     }
                                 }
                                 if ($backup) {
-                                    $env->getBackups()->create($options)->wait();
-                                    $message = 'Created a backup of the {element} for {site_env}.';
+                                    if ($async) {
+                                      $env->getBackups()->create($options);
+                                      $message = 'Creating a backup of the {element} for {site_env}.';
+                                    }else{
+                                      $env->getBackups()->create($options)->wait();
+                                      $message = 'Created a backup of the {element} for {site_env}.';
+                                    }
                                     $this->log()->notice($message, [
                                         'element'  => $element,
                                         'site_env' => $site_env,
                                     ]);
+
                                     $count += 1;
                                 }
                             }
