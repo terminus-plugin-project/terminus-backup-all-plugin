@@ -32,7 +32,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      * @option string $owner Owner filter; "me" or user UUID
      * @option string $org Organization filter; "all" or organization UUID
      * @option string $name Name filter
-     * @option boolean $async Async Requests
+     * @option boolean $async Asynchronous request
      *
      * @usage terminus backup-all:create
      *     Creates a backup of all elements in all site environments and automatically commits any pending filesystem changes.
@@ -61,7 +61,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      * @usage terminus backup-all:create --name=<regex>
      *     Creates a backup of all elements in all site environments with a name that matches <regex>.
      * @usage terminus backup-all:create --async
-     *     Creates a backup of all elements but does not wait for backup to finish request is done asynchronous.
+     *     Creates a backup of all elements but does not wait for the backup to finish since the request is asynchronous.
      */
     public function create($options = ['env' => null, 'element' => null, 'skip' => null, 'changes' => 'commit', 'keep-for' => 365, 'team' => false, 'owner' => null, 'org' => null, 'name' => null, 'async' => false])
     {
