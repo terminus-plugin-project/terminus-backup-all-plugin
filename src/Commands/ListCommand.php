@@ -25,7 +25,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @option string $env [dev|test|live] Backup environment filter
      * @option string $element [code|files|database|db] Backup element filter
-     * @option string $date [YYYY-MM-DD] Backup date filter
+     * @option string $date YYYY-MM-DD[:YYYY-MM-DD] Backup date (or colon separated range) filter
      * @option flag $team Team-only filter
      * @option string $owner Owner filter; "me" or user UUID
      * @option string $org Organization filter; "all" or organization UUID
@@ -116,9 +116,22 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
 
         if (!empty($rows)) {
             if (isset($options['date'])) {
+                $dates = explode(':', $options['date']);
+                $lower = $dates[0];
+                if (isset($dates[1])) {
+                    $upper = $dates[1];
+                    if ($lower > $upper) {
+                        $date = $lower;
+                        $lower = $upper;
+                        $upper = $date;
+                    }
+                } else {
+                    $upper = $lower;
+                }
                 $new_rows = [];
                 foreach ($rows as $row) {
-                    if (strpos($row['date'], $options['date']) !== false) {
+                    $row_date = date('Y-m-d', strtotime($row['date']));
+                    if ($row_date >= $lower and $row_date <= $upper) {
                         $new_rows[] = $row;
                     }
                 }

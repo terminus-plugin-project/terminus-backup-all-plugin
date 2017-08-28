@@ -10,7 +10,7 @@ Terminus plugin to backup all available Pantheon sites with one command.
 
 ## Usage:
 ```
-$ terminus backup-all:[create|get|list] [--env=<id>] [--element=<element>] [--skip=<items>] [--date=<YYYY-MM-DD>] [--changes=<change>] [--team] [--owner=<user>] [--org=<org>] [--name=<regex>]
+$ terminus backup-all:[create|get|list] [--env=<id>] [--element=<element>] [--skip=<items>] [--date=<YYYY-MM-DD>] [--changes=<change>] [--team] [--owner=<user>] [--org=<org>] [--name=<regex>] [--async]
 ```
 The associative arguments are all optional and the same filtering rules as the `terminus site:list` command apply.
 
@@ -20,15 +20,21 @@ The **--element** option value filters by element.  Valid values include **code,
 
 The **--skip** option value is a comma separated list of one or more elements, entire environments or specific site environments to omit from backups.
 
-The **--date** option value filters by a specified date and returns the backups for any date if omitted.
+The **--date** option value filters by a specified date (or colon separated range) and returns the backups for any date if omitted.
 
 The **--changes** option is only necessary when the environment is in sftp connection mode and decides how to handle pending filesystem changes.  Valid values include **commit, ignore or skip** and the default is **commit** which will create an automatic commit of any pending filesystem changes before completing the backup.  The difference between **ignore** and **skip** is **ignore** will continue and make the backup anyway *_(without pending filesystem changes)_*, whereas **skip** will not.
+
+The **--async** option value will process the request asynchronously.
 
 ## Examples:
 ```
 $ terminus ball:create
 ```
 This is an alias for the `terminus backup-all:create` command and will backup all elements of all environments for all available sites and perform the backup after committing pending filesystem changes.
+```
+$ terminus ball:create --async
+```
+Same as above but process the request asynchronously.
 ```
 $ terminus ball:create --element=code --changes=ignore --skip=test,my-experiment.dev
 ```
@@ -50,6 +56,10 @@ $ terminus ball:list --date=YYYY-MM-DD
 ```
 List the backups for all available site environments on the specified date.
 ```
+$ terminus ball:list --date=YYYY-MM-DD:YYYY-MM-DD
+```
+Same as above but within the specified colon separated date range.
+```
 $ terminus ball:list --name=awesome --date=YYYY-MM-DD
 ```
 List the backups for all available site environments on the specified date that contain `awesome` in the name.
@@ -69,6 +79,10 @@ Retrieve the latest database backup for all available site environments.
 $ terminus ball:get --env=dev --element=code --date=YYYY-MM-DD
 ```
 Retrieve the latest code backup of the dev environment only for all available sites on the specified date.
+```
+$ terminus ball:get --env=dev --element=code --date=YYYY-MM-DD:YYYY-MM-DD
+```
+Same as above but within the specified colon separated date range.
 ```
 $ terminus ball:get --name=awesome --date=YYYY-MM-DD
 ```

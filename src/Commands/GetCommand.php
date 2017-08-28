@@ -26,7 +26,7 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @option string $env [dev|test|live] Backup environment to retrieve
      * @option string $element [code|files|database|db] Backup element to retrieve
-     * @option string $date [YYYY-MM-DD] Backup date to retrieve
+     * @option string $date YYYY-MM-DD[:YYYY-MM-DD] Backup date (or colon separated range) to retrieve
      * @option flag $team Team-only filter
      * @option string $owner Owner filter; "me" or user UUID
      * @option string $org Organization filter; "all" or organization UUID
@@ -104,8 +104,21 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
                                         ['element' => $element, 'site_env' => $site_env,]
                                     );
                                 } elseif (isset($options['date'])) {
+                                    $dates = explode(':', $options['date']);
+                                    $lower = $dates[0];
+                                    if (isset($dates[1])) {
+                                        $upper = $dates[1];
+                                        if ($lower > $upper) {
+                                            $date = $lower;
+                                            $lower = $upper;
+                                            $upper = $date;
+                                        }
+                                    } else {
+                                        $upper = $lower;
+                                    }
                                     foreach ($backups as $backup) {
-                                        if (strpos($backup->getDate(), $options['date']) !== false) {
+                                        $backup_date = date('Y-m-d', $backup->getDate());
+                                        if ($backup_date >= $lower and $backup_date <= $upper) {
                                             $rows[] = [
                                                 'url' => $backup->getUrl(),
                                             ];
