@@ -11,7 +11,6 @@ TOMORROW=$(date --date="+1 day" +%Y-%m-%d)
 
 @test "output of plugin 'get' command" {
   run terminus backup-all:get --name=$TERMINUS_SITE --date=$YESTERDAY:$TOMORROW
-  run terminus backup-all:get --name=$TERMINUS_SITE
   [[ "$output" == *"${TERMINUS_SITE}"* ]]
   [ "$status" -eq 0 ]
 }
