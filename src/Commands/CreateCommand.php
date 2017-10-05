@@ -125,7 +125,6 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
                     if ($environment['initialized'] == 'true') {
                         $process = !isset($options['env']) ? true : ($environment['id'] == $options['env']);
                         if ($process) {
-                            $options['env'] = $environment['id'];
                             foreach ($elements as $element) {
                                 $check = false;
                                 $backup = true;
