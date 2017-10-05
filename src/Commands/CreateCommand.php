@@ -37,7 +37,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      * @usage terminus backup-all:create
      *     Creates a backup of all elements in all site environments and automatically commits any pending filesystem changes.
      * @usage terminus backup-all:create --env=<id>
-     *     Creates a backup of all <id> environments only for all sites and automatically commits any pending filesystem changes.
+     *     Creates a backup of all <id> environments only for all sites and automatically commits any pending filesystem changes. Comma delimited to specify multiple environments.
      * @usage terminus backup-all:create --element=<element>
      *     Creates a backup of <element> elements only in all site environments and automatically commits any pending filesystem changes.
      * @usage terminus backup-all:create --skip=<element1|id1|site.env1,element2|id2|site.env2,etc.>
@@ -119,11 +119,12 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
         }
 
         $count = 0;
+        $envs = explode(',', $options['env']);
         foreach ($sites as $site) {
             if ($environments = $this->getSite($site['name'])->getEnvironments()->serialize()) {
                 foreach ($environments as $environment) {
                     if ($environment['initialized'] == 'true') {
-                        $process = !isset($options['env']) ? true : ($environment['id'] == $options['env']);
+                        $process = !isset($options['env']) ? true : in_array($environment['id'], $envs);
                         if ($process) {
                             foreach ($elements as $element) {
                                 $check = false;
