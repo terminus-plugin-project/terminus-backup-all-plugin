@@ -14,9 +14,9 @@ $ terminus backup-all:[create|get|list] [--env=<id>] [--element=<element>] [--sk
 ```
 The associative arguments are all optional and the same filtering rules as the `terminus site:list` command apply.
 
-The **--env** option value filters by environment.  Valid values include **dev, test, live** or any valid multidev environment.
+The **--env** option value filters by environment.  Valid values include **dev, test, live** or any valid multidev environment.  Separate multiple environments in a comma delimited list.
 
-The **--element** option value filters by element.  Valid values include **code, database or files**.
+The **--element** option value filters by element.  Valid values include **code, database or files**.  Separate multiple elements in a comma delimited list.
 
 The **--skip** option value is a comma separated list of one or more elements, entire environments or specific site environments to omit from backups.
 

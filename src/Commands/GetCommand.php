@@ -35,8 +35,10 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @usage terminus backup-all:get
      *     Displays the URL for the most recent files backup of all site environments.
-     * @usage terminus backup-all:get --element=code
-     *     Displays the URL for the most recent code backup of all site environments.
+     * @usage terminus backup-all:get --env=<id>
+     *     Displays the URL for the most recent files backup of all <id> site environments. Separate multiple environments in a comma delimited list.
+     * @usage terminus backup-all:get --element=<element>
+     *     Displays the URL for the most recent <element> backup of all site environments. Separate multiple elements in a comma delimited list.
      * @usage terminus backup-all:get --team
      *     Displays the URL for the most recent files backups of which the currently logged-in user is a member of the team.
      * @usage terminus backup-all:get --owner=<user>
@@ -56,6 +58,23 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function getBackup(array $options = ['env' => null, 'element' => null, 'date' => null, 'team' => false, 'owner' => null, 'org' => null, 'name' => null,])
     {
+        // Validate the --element option values.
+        $valid_elements = ['code', 'database', 'files',];
+        if (isset($options['element'])) {
+            $elements = explode(',', $options['element']);
+            foreach ($elements as $element) {
+                if ($element == 'db') {
+                    $element = 'database';
+                }
+                if (!in_array($element, $valid_elements)) {
+                    $message = "Invalid --element option value '$element'.  Allowed values are code, database or files.";
+                    throw new TerminusNotFoundException($message);
+                }
+            }
+        } else {
+            $elements = $valid_elements;
+        }
+
         // Filter sites, if necessary.
         $this->sites()->fetch(
             [
@@ -80,6 +99,33 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
             $this->log()->notice('You have no sites.');
         }
 
+        $envs = array();
+        if (isset($options['env'])) {
+            // Build valid environments list.
+            $valid_envs = array();
+            foreach ($sites as $site) {
+                if ($environments = $this->getSite($site['name'])->getEnvironments()->serialize()) {
+                    foreach ($environments as $environment) {
+                        if ($environment['initialized'] == 'true') {
+                            if (!in_array($environment['id'], $valid_envs)) {
+                                $valid_envs[] = $environment['id'];
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Validate the --env option values.
+            $envs = explode(',', $options['env']);
+            $envs_list = implode(', ', $valid_envs);
+            foreach ($envs as $env) {
+                if (!in_array($env, $valid_envs)) {
+                    $message = "Invalid --env option value '$env'.  Allowed values are $envs_list.";
+                    throw new TerminusNotFoundException($message);
+                }
+            }
+        }
+
         $rows = [];
         foreach ($sites as $site) {
             if ($environments = $this->getSite($site['name'])->getEnvironments()->serialize()) {
@@ -90,12 +136,6 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
                             $site_env = $site['name'] . '.' . $environment['id'];
                             list(, $env) = $this->getSiteEnv($site_env);
 
-                            if (isset($options['element'])) {
-                                $element = ($options['element'] == 'db') ? 'database' : $options['element'];
-                                $elements = [$element];
-                            } else {
-                                $elements = ['code', 'database', 'files',];
-                            }
                             foreach ($elements as $element) {
                                 $backups = $env->getBackups()->getFinishedBackups($element);
                                 if (empty($backups)) {
