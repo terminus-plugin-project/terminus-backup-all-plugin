@@ -35,6 +35,8 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *     Lists all backups in all site environments.
      * @usage terminus backup-all:list --element=<element>
      *     Lists all <element> backups of all site environments.
+     * @usage terminus backup-all:list --framework=<backdrop|drupal|drupal8|wordpress>
+     *     Lists all backups of specific frameworks only in all site environments.
      * @usage terminus backup-all:list --team
      *     Lists all backups of which the currently logged-in user is a member of the team.
      * @usage terminus backup-all:list --owner=<user>
@@ -55,7 +57,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *     initiator: Initiator
      * @return RowsOfFields
      */
-    public function listBackups($options = ['env' => 'all', 'element' => 'all', 'date' => null, 'team' => false, 'owner' => null, 'org' => null, 'name' => null,])
+    public function listBackups($options = ['env' => 'all', 'element' => 'all', 'framework' => null, 'date' => null, 'team' => false, 'owner' => null, 'org' => null, 'name' => null,])
     {
         // Filter sites, if necessary.
         $this->sites()->fetch(
@@ -75,6 +77,19 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
             $this->sites->filterByOwner($owner);
         }
 
+        // Validate the --framework options value.
+        $framework = [];
+        $frameworks = ['backdrop', 'drupal', 'drupal8', 'wordpress',];
+        if (isset($options['framework'])) {
+            $framework = explode(',', $options['framework']);
+            foreach ($framework as $fw) {
+                if (!in_array($fw, $frameworks)) {
+                    $message = 'Invalid --framework option value.  Allowed values are backdrop, drupal, drupal8 or wordpress.';
+                    throw new TerminusNotFoundException($message);
+                }
+            }
+        }
+
         $sites = $this->sites->serialize();
 
         if (empty($sites)) {
@@ -84,10 +99,14 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
         $rows = [];
         $element = $options['element'];
         foreach ($sites as $site) {
+            $fw = $site['framework'];
             if ($environments = $this->getSite($site['name'])->getEnvironments()->serialize()) {
                 foreach ($environments as $environment) {
                     if ($environment['initialized'] == 'true') {
                         $show = ($options['env'] == 'all') ? true : ($environment['id'] == $options['env']);
+                        if ($show && !empty($framework) && !in_array($fw, $framework)) {
+                            $show = false;
+                        }
                         if ($show) {
                             $site_env = $site['name'] . '.' . $environment['id'];
                             list(, $env) = $this->getSiteEnv($site_env, 'dev');

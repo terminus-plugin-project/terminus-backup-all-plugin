@@ -37,6 +37,8 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
      *     Displays the URL for the most recent files backup of all site environments.
      * @usage terminus backup-all:get --element=code
      *     Displays the URL for the most recent code backup of all site environments.
+     * @usage terminus backup-all:get --framework=<backdrop|drupal|drupal8|wordpress>
+     *     Displays the URL for the most recent files backups of specific frameworks only in all site environments.
      * @usage terminus backup-all:get --team
      *     Displays the URL for the most recent files backups of which the currently logged-in user is a member of the team.
      * @usage terminus backup-all:get --owner=<user>
@@ -54,7 +56,7 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
      *     url: URL
      * @return RowsOfFields
      */
-    public function getBackup(array $options = ['env' => null, 'element' => null, 'date' => null, 'team' => false, 'owner' => null, 'org' => null, 'name' => null,])
+    public function getBackup(array $options = ['env' => null, 'element' => null, 'framework' => null, 'date' => null, 'team' => false, 'owner' => null, 'org' => null, 'name' => null,])
     {
         // Filter sites, if necessary.
         $this->sites()->fetch(
@@ -74,6 +76,19 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
             $this->sites->filterByOwner($owner);
         }
 
+        // Validate the --framework options value.
+        $framework = [];
+        $frameworks = ['backdrop', 'drupal', 'drupal8', 'wordpress',];
+        if (isset($options['framework'])) {
+            $framework = explode(',', $options['framework']);
+            foreach ($framework as $fw) {
+                if (!in_array($fw, $frameworks)) {
+                    $message = 'Invalid --framework option value.  Allowed values are backdrop, drupal, drupal8 or wordpress.';
+                    throw new TerminusNotFoundException($message);
+                }
+            }
+        }
+
         $sites = $this->sites->serialize();
 
         if (empty($sites)) {
@@ -82,10 +97,14 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
 
         $rows = [];
         foreach ($sites as $site) {
+            $fw = $site['framework'];
             if ($environments = $this->getSite($site['name'])->getEnvironments()->serialize()) {
                 foreach ($environments as $environment) {
                     if ($environment['initialized'] == 'true') {
                         $show = !isset($options['env']) ? true : ($environment['id'] == $options['env']);
+                        if ($show && !empty($framework) && !in_array($fw, $framework)) {
+                            $show = false;
+                        }
                         if ($show) {
                             $site_env = $site['name'] . '.' . $environment['id'];
                             list(, $env) = $this->getSiteEnv($site_env);

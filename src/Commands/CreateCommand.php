@@ -37,9 +37,11 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      * @usage terminus backup-all:create
      *     Creates a backup of all elements in all site environments and automatically commits any pending filesystem changes.
      * @usage terminus backup-all:create --env=<id>
-     *     Creates a backup of all <id> environments only for all sites and automatically commits any pending filesystem changes. Comma delimited to specify multiple environments.
+     *     Creates a backup of all <id> environments only for all sites and automatically commits any pending filesystem changes. Comma delimit to specify multiple environments.
      * @usage terminus backup-all:create --element=<element>
      *     Creates a backup of <element> elements only in all site environments and automatically commits any pending filesystem changes.
+     * @usage terminus backup-all:create --framework=<backdrop|drupal|drupal8|wordpress>
+     *     Creates a backup of specific frameworks only in all site environments and automatically commits any pending filesystem changes.  Comma delimit to specify multiple frameworks.
      * @usage terminus backup-all:create --skip=<element1|id1|site.env1,element2|id2|site.env2,etc.>
      *     Creates a backup only in site environments that do not skip elements, unique environments or specific site environments and automatically commits any pending filesystem changes.
      * @usage terminus backup-all:create --changes=<change>
@@ -63,7 +65,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      * @usage terminus backup-all:create --async
      *     Creates a backup of all elements but does not wait for the backup to finish since the request is asynchronous.
      */
-    public function create($options = ['env' => null, 'element' => null, 'skip' => null, 'changes' => 'commit', 'keep-for' => 365, 'team' => false, 'owner' => null, 'org' => null, 'name' => null, 'async' => false])
+    public function create($options = ['env' => null, 'element' => null, 'framework' => null, 'skip' => null, 'changes' => 'commit', 'keep-for' => 365, 'team' => false, 'owner' => null, 'org' => null, 'name' => null, 'async' => false])
     {
         $async = $options['async'];
         // Validate the --element options value.
@@ -78,6 +80,19 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
                 throw new TerminusNotFoundException($message);
             }
             $elements = [$element];
+        }
+
+        // Validate the --framework options value.
+        $framework = [];
+        $frameworks = ['backdrop', 'drupal', 'drupal8', 'wordpress',];
+        if (isset($options['framework'])) {
+            $framework = explode(',', $options['framework']);
+            foreach ($framework as $fw) {
+                if (!in_array($fw, $frameworks)) {
+                    $message = 'Invalid --framework option value.  Allowed values are backdrop, drupal, drupal8 or wordpress.';
+                    throw new TerminusNotFoundException($message);
+                }
+            }
         }
 
         // Validate the --changes options value.
@@ -121,6 +136,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
         $count = 0;
         $envs = explode(',', $options['env']);
         foreach ($sites as $site) {
+            $fw = $site['framework'];
             if ($environments = $this->getSite($site['name'])->getEnvironments()->serialize()) {
                 foreach ($environments as $environment) {
                     if ($environment['initialized'] == 'true') {
@@ -132,6 +148,9 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
                                 $options['element'] = $element;
                                 $site_env = $site['name'] . '.' . $environment['id'];
                                 list(, $env) = $this->getSiteEnv($site_env);
+                                if (!empty($framework) && !in_array($fw, $framework)) {
+                                    $backup = false;
+                                }
                                 if (in_array($element, $skips)) {
                                     $backup = false;
                                 }
