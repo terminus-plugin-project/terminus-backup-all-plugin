@@ -18,6 +18,8 @@ The **--env** option value filters by environment.  Valid values include **dev, 
 
 The **--element** option value filters by element.  Valid values include **code, database or files**.
 
+The **--framework** option value filters by framework.  Valid values include **backdrop, drupal, drupal8 or wordpress**.
+
 The **--skip** option value is a comma separated list of one or more elements, entire environments or specific site environments to omit from backups.
 
 The **--date** option value filters by a specified date (or colon separated range) and returns the backups for any date if omitted.
@@ -40,6 +42,10 @@ $ terminus ball:create --element=code --changes=ignore --skip=test,my-experiment
 ```
 Backup the code only of all environments for all available sites and perform the backup without committing pending filesystem changes, skipping all test environments and the specific site environment `my-experiment.dev`.
 ```console
+$ terminus ball:create --framework=drupal
+```
+Backup all elements of all environments for all available sites that include the drupal (Drupal 6 and 7) framework and perform the backup after committing pending filesystem changes.
+```console
 $ terminus ball:list
 ```
 This is an alias for the `terminus backup-all:list` command and will list the backups of all elements in all available site environments.
@@ -51,6 +57,10 @@ List the backups of all elements in the dev environment only of all available si
 $ terminus ball:list --element=code
 ```
 List the backups of the code only for all available site environments.
+```console
+$ terminus ball:list --framework=drupal
+```
+List the backups of all elements in all environments for all available sites that include the drupal (Drupal 6 and 7) framework.
 ```console
 $ terminus ball:list --date=YYYY-MM-DD
 ```
@@ -75,6 +85,10 @@ Retrieve the latest files backup for all available site environments that contai
 $ terminus ball:get --element=db
 ```
 Retrieve the latest database backup for all available site environments.
+```console
+$ terminus ball:list --framework=drupal
+```
+Retrieve the latest files backup of all environments for all available sites that include the drupal (Drupal 6 and 7) framework.
 ```console
 $ terminus ball:get --env=dev --element=code --date=YYYY-MM-DD
 ```
