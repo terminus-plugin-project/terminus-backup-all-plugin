@@ -42,9 +42,9 @@ $ terminus ball:create --element=code --changes=ignore --skip=test,my-experiment
 ```
 Backup the code only of all environments for all available sites and perform the backup without committing pending filesystem changes, skipping all test environments and the specific site environment `my-experiment.dev`.
 ```console
-$ terminus ball:create --framework=drupal
+$ terminus ball:create --framework=drupal,drupal8
 ```
-Backup all elements of all environments for all available sites that include the drupal (Drupal 6 and 7) framework and perform the backup after committing pending filesystem changes.
+Backup all elements of all environments for all available sites that include the drupal and drupal8 (Drupal 6, 7 and 8) frameworks and perform the backup after committing pending filesystem changes.
 ```console
 $ terminus ball:list
 ```
@@ -58,9 +58,9 @@ $ terminus ball:list --element=code
 ```
 List the backups of the code only for all available site environments.
 ```console
-$ terminus ball:list --framework=drupal
+$ terminus ball:list --framework=drupal,drupal8
 ```
-List the backups of all elements in all environments for all available sites that include the drupal (Drupal 6 and 7) framework.
+List the backups of all elements in all environments for all available sites that include the drupal and drupal8 (Drupal 6, 7 and 8) frameworks.
 ```console
 $ terminus ball:list --date=YYYY-MM-DD
 ```
@@ -86,9 +86,9 @@ $ terminus ball:get --element=db
 ```
 Retrieve the latest database backup for all available site environments.
 ```console
-$ terminus ball:list --framework=drupal
+$ terminus ball:get --framework=drupal,drupal8
 ```
-Retrieve the latest files backup of all environments for all available sites that include the drupal (Drupal 6 and 7) framework.
+Retrieve the latest files backup of all environments for all available sites that include the drupal and drupal8 (Drupal 6, 7 and 8) frameworks.
 ```console
 $ terminus ball:get --env=dev --element=code --date=YYYY-MM-DD
 ```
