@@ -199,7 +199,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
                                         $env->getBackups()->create($options);
                                         $message = 'Creating a backup of the {element} for {site_env}.';
                                     } else {
-                                        $env->getBackups()->create($options)->wait();
+                                        $env->getBackups()->create($options)->checkProgress();
                                         $message = 'Created a backup of the {element} for {site_env}.';
                                     }
                                     $this->log()->notice($message, [

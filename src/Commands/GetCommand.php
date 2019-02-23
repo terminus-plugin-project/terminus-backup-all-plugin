@@ -35,7 +35,7 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @usage terminus backup-all:get
      *     Displays the URL for the most recent files backup of all site environments.
-     * @usage terminus backup-all:get --element=code
+     * @usage terminus backup-all:get --element=<code|files|database|db>
      *     Displays the URL for the most recent code backup of all site environments.
      * @usage terminus backup-all:get --framework=<backdrop|drupal|drupal8|wordpress>
      *     Displays the URL for the most recent files backups of specific frameworks only in all site environments.
@@ -100,7 +100,7 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
             $fw = $site['framework'];
             if ($environments = $this->getSite($site['name'])->getEnvironments()->serialize()) {
                 foreach ($environments as $environment) {
-                    if ($environment['initialized'] == 'true') {
+                    if ($environment['initialized']) {
                         $show = !isset($options['env']) ? true : ($environment['id'] == $options['env']);
                         if ($show && !empty($framework) && !in_array($fw, $framework)) {
                             $show = false;
@@ -139,14 +139,14 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
                                         $backup_date = date('Y-m-d', $backup->getDate());
                                         if ($backup_date >= $lower and $backup_date <= $upper) {
                                             $rows[] = [
-                                                'url' => $backup->getUrl(),
+                                                'url' => $backup->getArchiveURL(),
                                             ];
                                         }
                                     }
                                 } else {
                                     $backup = array_shift($backups);
                                     $rows[] = [
-                                        'url' => $backup->getUrl(),
+                                        'url' => $backup->getArchiveURL(),
                                     ];
                                 }
                             }
